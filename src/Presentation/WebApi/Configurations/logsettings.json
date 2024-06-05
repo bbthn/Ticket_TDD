@@ -1,0 +1,29 @@
+﻿{
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Graylog", "Serilog.Sinks.MSSqlServer" ],
+    "MinimumLevel": "Information",
+    "WriteTo": [
+      {
+        "Name": "Graylog",
+        "Args": {
+          "hostnameOrAddress": "127.0.0.1",
+          "port": "12201",
+          "transportType": "Udp",
+          "facility": "PostTicketService"
+        }
+      },
+      {
+        "Name": "MSSqlServer",
+        "Args": {
+          "connectionString": "Data Source=172.167.76.241,1433;User Id=sa;Password=mypassword55!!;Initial Catalog=PostTicketing;Connect Timeout=60;Encrypt=False;Trust Server Certificate=True",
+          "tableName": "Log",
+          "autoCreateSqlTable": true
+        }
+      }
+    ],
+
+    "Properties": {
+      "Application": "TicketService"
+    }
+  }
+}
