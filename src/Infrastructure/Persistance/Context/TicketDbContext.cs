@@ -1,17 +1,19 @@
 ﻿
 using Core.Domain.Entities;
+using Core.Domain.Entities.Identity;
 using Infrastructure.Persistance.EntityConfigurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.Persistance.Context
 {
-    public class TicketDbContext:DbContext
+    public class TicketDbContext : IdentityDbContext<AppUser,AppRole,Guid>
     {
         public const string DEFAULT_SCHEMA = "ticketing";
 
-        public TicketDbContext(DbContextOptions dbContextOptions):base(dbContextOptions) { }
-        
+        public TicketDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
+
         DbSet<Ticket> Tickets { get; set; }
         DbSet<Flight> Flights { get; set; }
 
@@ -20,7 +22,7 @@ namespace Infrastructure.Persistance.Context
             var entries = ChangeTracker.Entries<BaseEntity>();
             foreach (var entry in entries)
             {
-                if(entry.State == EntityState.Added || entry.State == EntityState.Modified)
+                if (entry.State == EntityState.Added)
                 {
                     entry.Entity.ModifiedDate = DateTime.UtcNow;
                     entry.Entity.CreatedDate = DateTime.UtcNow;

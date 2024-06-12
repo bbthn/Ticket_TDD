@@ -2,6 +2,7 @@
 using Application.Interfaces.Services;
 using AutoMapper;
 using Core.Application.Dtos;
+using Core.Application.Enums;
 using Core.Domain.Entities;
 
 namespace Application.Services
@@ -27,7 +28,7 @@ namespace Application.Services
         }
         public async Task<TicketDto> VoidTicketAsync(TicketDto ticket)
         {
-            ticket.Status = 0;
+            ticket.Status = (int)TicketStatus.Voided;
             var res = await _ticketRepository.UpdateAsync(_mapper.Map<Ticket>(ticket));
             if(res != null)
                 return _mapper.Map<TicketDto>(res);

@@ -18,11 +18,15 @@ namespace Core.Application.Services
 
         public async Task<List<FlightDto>> GetFlightOptions(string departure, string destination, DateTime date)
         {
-            var flights = await flightRepository.GetAllAsync(x => x.Departure == departure && x.Destination == destination);
-            if (flights != null)
-                return mapper.Map<List<FlightDto>>(flights);
-            else
+            var flights = await flightRepository.GetAllAsync(x => x.Departure == departure &&
+            x.Destination == destination &&
+            x.FlightDate >= date.AddDays(-5) &&
+            x.FlightDate <= date.AddDays(5));
+            if (flights != null && flights.Count == 0)
                 return null;
+            else
+                return mapper.Map<List<FlightDto>>(flights);
+
         }
 
     }

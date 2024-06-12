@@ -56,13 +56,14 @@ public class FlightServiceTests
         var departure = "IST";
         var destination = "LHR";
         var date = DateTime.Now;
-        _flightRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<Expression<Func<Flight, bool>>>())).ReturnsAsync((List<Flight>)null);
+        _flightRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<Expression<Func<Flight, bool>>>())).ReturnsAsync(new List<Flight>());
 
         // Act
         var result = await _flightService.GetFlightOptions(departure, destination, date);
 
         // Assert
         Assert.IsNull(result);
+
     }
 
 }

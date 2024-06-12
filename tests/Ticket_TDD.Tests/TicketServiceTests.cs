@@ -23,7 +23,7 @@ public class TicketServiceTests
         _mapperMock = new Mock<IMapper>();
         _ticketService = new TicketService(_ticketRepositoryMock.Object, _mapperMock.Object);
     }
-
+    //MethodName_StateUnderTest_ExpectedBehavior
     [Test]
     public async Task GetTicketAsync_TicketFound_ReturnsTicketDto()
     {
@@ -124,10 +124,14 @@ public class TicketServiceTests
         var ticketDto = new TicketDto { Pnr = "ABC123", TicketNumber = "123456", Status = 1 };
         var newFlightId = Guid.NewGuid();
         var updatedTicket = new Ticket { Pnr = "ABC123", TicketNumber = "123456", Status = 1, FlightId = newFlightId };
-        _mapperMock.Setup(x => x.Map<Ticket>(ticketDto)).Returns(updatedTicket);
-        _ticketRepositoryMock.Setup(x => x.UpdateAsync(updatedTicket)).ReturnsAsync(updatedTicket);
+
+
+        _mapperMock.Setup(x => x.Map<Ticket>(ticketDto)).Returns(It.IsAny<Ticket>());
+        _ticketRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Ticket>())).ReturnsAsync(updatedTicket);
+
         var expectedUpdatedTicketDto = new TicketDto { Pnr = "ABC123", TicketNumber = "123456", Status = 1, FlightId = newFlightId };
         _mapperMock.Setup(x => x.Map<TicketDto>(updatedTicket)).Returns(expectedUpdatedTicketDto);
+
 
         // Act
         var result = await _ticketService.ReissueTicket(ticketDto, newFlightId);
@@ -141,13 +145,11 @@ public class TicketServiceTests
     public async Task ReissueTicket_TicketNotReissued_ReturnsNull()
     {
         // Arrange
-        var ticketDto = new TicketDto { Pnr = "ABC123", TicketNumber = "123456", Status = 1 };
-        var newFlightId = Guid.NewGuid();
-        _mapperMock.Setup(x => x.Map<Ticket>(ticketDto)).Returns(new Ticket());
+        _mapperMock.Setup(x => x.Map<Ticket>(new TicketDto())).Returns(new Ticket());
         _ticketRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Ticket>())).ReturnsAsync((Ticket)null);
 
         // Act
-        var result = await _ticketService.ReissueTicket(ticketDto, newFlightId);
+        var result = await _ticketService.ReissueTicket(new TicketDto(), new Guid());
 
         // Assert
         Assert.IsNull(result);

@@ -1,6 +1,11 @@
-using Core.Application;
+﻿using Core.Application;
 using Infrastructure.Persistance;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using WebApi.Extensions;
+using WebApi.Extensions.Auth;
 using WebApi.Middlewares;
 using static WebApi.Middlewares.ExceptionMiddleware;
 
@@ -13,12 +18,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
 builder.Services.ConfigureServices();
-
 builder.Services.ConfigurePersistance(builder.Configuration);
 builder.Services.ConfigureSerilog();
+
+
+
+builder.Services.ConfiureAuthentication(builder.Configuration);
+builder.Services.ConfigureAuthorization(builder.Configuration);
+
 
 
 var app = builder.Build();
@@ -33,6 +41,9 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.Run();

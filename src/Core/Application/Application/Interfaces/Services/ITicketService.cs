@@ -1,7 +1,4 @@
-﻿
-using Application.Interfaces.Repository;
-using Application.Services;
-using Core.Application.Dtos;
+﻿using Core.Application.Dtos;
 
 namespace Application.Interfaces.Services
 {

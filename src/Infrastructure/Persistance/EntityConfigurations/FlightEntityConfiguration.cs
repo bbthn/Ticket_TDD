@@ -21,7 +21,6 @@ namespace Infrastructure.Persistance.EntityConfigurations
 
             builder.Property(f => f.Departure).IsRequired();
 
-
             builder.Property(f => f.Destination).IsRequired();
 
 

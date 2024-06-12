@@ -3,7 +3,6 @@ using Core.Domain.Entities;
 using Infrastructure.Persistance.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Persistance.Repository
 {
@@ -18,15 +17,17 @@ namespace Infrastructure.Persistance.Repository
             _context = context;
         }
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> filter)
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> filter=null)
         {
-
-            return await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync(filter);
+            IQueryable<T> query = _context.Set<T>().AsNoTracking();
+            if (filter != null)
+                query = query.Where(filter);
+            return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter=null)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = table;
             query.AsNoTracking();
             if (filter != null)
             {
@@ -36,7 +37,6 @@ namespace Infrastructure.Persistance.Repository
         }
         public async Task<T> UpdateAsync(T entity)
         {
-
             table.Update(entity);
             await _context.SaveChangesAsync();
             return entity;

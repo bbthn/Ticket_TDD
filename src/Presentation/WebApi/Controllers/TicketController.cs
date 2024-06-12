@@ -1,22 +1,37 @@
 ﻿using Application.Interfaces.Services;
+using Core.Application.Dtos;
 using Core.Application.Interfaces.Services;
 using Core.Application.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "user")]
     public class TicketController : ControllerBase
     {
         private readonly ITicketService _ticketService;
         private readonly IFlightService _flightService;
+        private readonly ILogger _logger;
 
-        public TicketController(ITicketService ticketService, IFlightService flightService)
+        public TicketController(ITicketService ticketService, IFlightService flightService,ILogger<TicketController> logger)
         {
             _ticketService = ticketService;
             _flightService = flightService;
+            _logger = logger;
         }
+
+        [HttpGet]
+        [Route("echo/{req:maxlength(10)}")]
+        [Authorize(Policy = "basicUser")]
+        public async Task<IActionResult> Alive(string req)
+        {
+            _logger.LogInformation(req);
+            return Ok($"{req}");
+        }
+
 
         [HttpPost("void")]
         public async Task<IActionResult> VoidTicketAsync([FromBody] VoidTicketRequest req)
@@ -31,8 +46,11 @@ namespace WebApi.Controllers
             var voidedTicket = await _ticketService.VoidTicketAsync(ticket);
             if (voidedTicket == null)
                 return BadRequest("Ticket is not voided");
+
+            _logger.LogInformation($"Ticket {ticket.TicketNumber} was voided");
             return Ok("Ticket voided successfully");
         }
+
 
         [HttpPost("reissue")]
         public async Task<IActionResult> ReissueTicketAsync([FromBody]ReissueTicketRequest req)
@@ -46,8 +64,9 @@ namespace WebApi.Controllers
             var flightOptions = await _flightService.GetFlightOptions(req.NewDeparture, req.NewDestination, req.DateTime);
             if(flightOptions == null)
                 return NotFound("Flight options are not found");
-            return Ok(new ReissueTicketResponse() { Flights=flightOptions,Ticket=ticket});
 
+            _logger.LogInformation($"Ticket {ticket.TicketNumber} was reissued");
+            return Ok(new ReissueTicketResponse() { Flights=flightOptions,Ticket=ticket});
 
         }
 
@@ -60,6 +79,13 @@ namespace WebApi.Controllers
                 return NotFound("Ticket is not found");
             return Ok(confirmed);
            
+        }
+
+        [HttpGet("addticket")]
+        [Authorize(Policy = "admin")]
+        public async Task<IActionResult> AddTicket()
+        {
+            return Ok("Ticket Eklendi!");
         }
     }
 

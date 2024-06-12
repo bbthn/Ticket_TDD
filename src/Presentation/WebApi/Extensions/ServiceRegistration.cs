@@ -8,7 +8,6 @@ namespace WebApi.Extensions
 
         public static IServiceCollection ConfigureSerilog(this IServiceCollection services)
         {
-            var x = ConfigurationSetting.logConfiguration;
             Serilog.Core.Logger logger = new LoggerConfiguration()
                  .ReadFrom.Configuration(ConfigurationSetting.logConfiguration)
                  .CreateLogger();

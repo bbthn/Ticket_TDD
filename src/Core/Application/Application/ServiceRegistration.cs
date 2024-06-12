@@ -14,12 +14,17 @@ namespace Core.Application
         public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
             var asmm = Assembly.GetExecutingAssembly();
+
+
+
             services.AddAutoMapper(asmm);
             services.AddValidatorsFromAssembly(asmm);
             services.AddFluentValidationAutoValidation();
 
 
-            services.AddScoped<ITicketService, TicketService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<ITicketService,TicketService>();
             services.AddScoped<IFlightService,FlightService>();
 
             return services;
