@@ -1,9 +1,11 @@
 ﻿using Core.Application;
 using Infrastructure.Persistance;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.RateLimiting;
 using WebApi.Extensions;
 using WebApi.Extensions.Auth;
 using WebApi.Middlewares;
@@ -28,8 +30,24 @@ builder.Services.ConfiureAuthentication(builder.Configuration);
 builder.Services.ConfigureAuthorization(builder.Configuration);
 
 
+builder.Services.AddRateLimiter(opt =>
+{
+    opt.AddFixedWindowLimiter("Basic", opt =>
+    {
+        opt.Window = TimeSpan.FromSeconds(10);
+        opt.PermitLimit = 4;
+        opt.QueueLimit = 2;
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
+
+
 
 var app = builder.Build();
+
+app.UseRateLimiter();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

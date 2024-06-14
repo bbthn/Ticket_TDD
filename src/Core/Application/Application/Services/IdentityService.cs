@@ -97,13 +97,14 @@ namespace Core.Application.Services
         private async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accesTokenDate)
         {
             user.RefreshToken = refreshToken;
-            user.RefreshTokenEndDate = accesTokenDate.AddMinutes(2); // test
+            user.RefreshTokenEndDate = accesTokenDate.AddMinutes(5); 
             var res = await _userManager.UpdateAsync(user);
         }
 
         public async Task<AccessTokenDto> RefreshTokenLogin(string req)
         {
-            AppUser? user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == req && u.RefreshTokenEndDate > DateTime.UtcNow);
+
+            AppUser? user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == req && u.RefreshTokenEndDate > DateTime.Now);
             if (user != null)
             {
                 AccessTokenDto accessTokenDto = await _tokenService.CreateAccessToken(user);

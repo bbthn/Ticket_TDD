@@ -4,12 +4,14 @@ using Core.Application.Interfaces.Services;
 using Core.Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "user")]
+    [EnableRateLimiting("Basic")]
     public class TicketController : ControllerBase
     {
         private readonly ITicketService _ticketService;

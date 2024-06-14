@@ -42,7 +42,8 @@ namespace Core.Application.Services
             AccessTokenDto tokenDto = new AccessTokenDto();
             SymmetricSecurityKey symmetricSecurityKey = new(Encoding.UTF8.GetBytes(_configuration["Auth:SigningKey"]));
             SigningCredentials signingCredentials = new(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-            tokenDto.Expiration = DateTime.UtcNow.AddSeconds(15); // test
+            tokenDto.Expiration = DateTime.Now.AddMinutes(15); 
+
 
             JwtSecurityToken jwtSecurityToken = new(
                 signingCredentials: signingCredentials,
